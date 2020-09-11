@@ -65,23 +65,21 @@ public class LayersConfigParser {
 
     private static LayersConfig parseFromToml(Path layersConfigFile) {
         try (InputStream inputStream = layersConfigFile.toUri().toURL().openStream()) {
-            return readFromToml(Toml.from(inputStream));
+            TomlTable toml = Toml.from(inputStream);
+            
+            LayersConfig config = new LayersConfig();
+
+            readTomlLayers(config, (TomlTable) toml.get("layers"));
+            readTomlMain(config, (TomlTable) toml.get("main"));
+
+            return config;
         }
         catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    private static LayersConfig readFromToml(TomlTable toml) {
-        LayersConfig config = new LayersConfig();
-
-        readLayers(config, (TomlTable) toml.get("layers"));
-        readMain(config, (TomlTable) toml.get("main"));
-
-        return config;
-    }
-
-    private static void readMain(LayersConfig config, TomlTable table) {
+    private static void readTomlMain(LayersConfig config, TomlTable table) {
         Main main = new Main();
         config.setMain(main);
 
@@ -89,20 +87,22 @@ public class LayersConfigParser {
         main.setClazz(String.valueOf(table.get("class")));
     }
 
-    private static void readLayers(LayersConfig config, TomlTable table) {
+    @SuppressWarnings("unchecked")
+    private static void readTomlLayers(LayersConfig config, TomlTable table) {
         final Map<String, Layer> layers = new LinkedHashMap<>();
         config.setLayers(layers);
 
         table.entrySet().forEach(entry -> {
             Layer layer = new Layer();
             TomlTable layerTable = (TomlTable) entry.getValue();
-            if (layerTable.asMap().containsKey("parents")) {
+            Map<String, Object> layerMap = layerTable.asMap();
+            if (layerMap.containsKey("parents")) {
                 layer.setParents((List<String>) layerTable.get("parents"));
             }
-            if (layerTable.asMap().containsKey("modules")) {
+            if (layerMap.containsKey("modules")) {
                 layer.setModules((List<String>) layerTable.get("modules"));
             }
-            if (layerTable.asMap().containsKey("directory")) {
+            if (layerMap.containsKey("directory")) {
                 layer.setDirectory(String.valueOf(layerTable.get("directory")));
             }
             layers.put(entry.getKey(), layer);
