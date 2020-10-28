@@ -31,26 +31,33 @@ import java.io.File;
  */
 public final class LayrryLauncher {
 
-    public static void main(String... args) throws Exception {
+    public static void main(String... args) {
         launch(args);
     }
 
-    public static void launch(String... args) throws Exception {
-        Args arguments = new Args();
+    public static int launch(String... args) {
+        try {
+            Args arguments = new Args();
 
-        JCommander.newBuilder()
-            .addObject(arguments)
-            .build()
-            .parse(args);
+            JCommander.newBuilder()
+                .addObject(arguments)
+                .build()
+                .parse(args);
 
-        File layersConfigFile = arguments.getLayersConfig().getAbsoluteFile();
-        File propertiesFile = arguments.getProperties();
-        String[] parsedArgs = arguments.getMainArgs().toArray(new String[0]);
+            File layersConfigFile = arguments.getLayersConfig().getAbsoluteFile();
+            File propertiesFile = arguments.getProperties();
+            String[] parsedArgs = arguments.getMainArgs().toArray(new String[0]);
 
-        if (null == propertiesFile) {
-            Layrry.run(layersConfigFile.toPath(), parsedArgs);
-        } else {
-            Layrry.run(layersConfigFile.toPath(), propertiesFile.getAbsoluteFile().toPath(), parsedArgs);
+            if (null == propertiesFile) {
+                Layrry.run(layersConfigFile.toPath(), parsedArgs);
+            } else {
+                Layrry.run(layersConfigFile.toPath(), propertiesFile.getAbsoluteFile().toPath(), parsedArgs);
+            }
+        } catch (Throwable t) {
+            t.printStackTrace();
+            return 1;
         }
+
+        return 0;
     }
 }
