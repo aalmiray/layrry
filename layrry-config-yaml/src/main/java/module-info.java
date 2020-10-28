@@ -14,10 +14,12 @@
  *  limitations under the License.
  */
 
-module org.moditect.layrry.platform {
-    exports org.moditect.layrry.platform;
+module org.moditect.layrry.config.yaml {
+    exports org.moditect.layrry.config.yaml;
 
-    opens org.moditect.layrry.platform.internal;
+    requires org.moditect.layrry.config;
+    requires org.yaml.snakeyaml;
 
-    uses org.moditect.layrry.platform.PluginLifecycleListener;
+    provides org.moditect.layrry.config.LayersConfigParser
+        with org.moditect.layrry.config.yaml.YamlLayersConfigParser;
 }

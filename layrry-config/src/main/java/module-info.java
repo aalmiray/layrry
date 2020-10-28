@@ -14,10 +14,11 @@
  *  limitations under the License.
  */
 
-module org.moditect.layrry.platform {
-    exports org.moditect.layrry.platform;
+module org.moditect.layrry.config {
+    exports org.moditect.layrry.config;
 
-    opens org.moditect.layrry.platform.internal;
+    requires os.maven.plugin;
+    requires com.github.mustachejava;
 
-    uses org.moditect.layrry.platform.PluginLifecycleListener;
+    uses org.moditect.layrry.config.LayersConfigParser;
 }

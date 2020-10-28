@@ -14,10 +14,12 @@
  *  limitations under the License.
  */
 
-module org.moditect.layrry.platform {
-    exports org.moditect.layrry.platform;
+module org.moditect.layrry.config.toml {
+    exports org.moditect.layrry.config.toml;
 
-    opens org.moditect.layrry.platform.internal;
+    requires org.moditect.layrry.config;
+    requires com.github.jezza.toml;
 
-    uses org.moditect.layrry.platform.PluginLifecycleListener;
+    provides org.moditect.layrry.config.LayersConfigParser
+        with org.moditect.layrry.config.toml.TomlLayersConfigParser;
 }
