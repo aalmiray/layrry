@@ -39,6 +39,7 @@
     <project.identifier>layrry</project.identifier>
     <project.repository>moditect/layrry</project.repository>
     <local.repository.path>/tmp/repository</local.repository.path>
+    <layrry.version>${project.version}</layrry.version>
     <java.version>11</java.version>
     <maven.compiler.source>${java.version}</maven.compiler.source>
     <maven.compiler.target>${java.version}</maven.compiler.target>
@@ -195,6 +196,29 @@
             <exclude>.mvn/wrapper/MavenWrapperDownloader.java</exclude>
           </excludes>
         </configuration>
+      </plugin>
+      <plugin>
+        <groupId>io.sdkman</groupId>
+        <artifactId>sdkman-maven-plugin</artifactId>
+        <version>2.0.0</version>
+        <inherited>false</inherited>
+        <executions>
+          <execution>
+            <goals>
+              <goal>major-release</goal>
+            </goals>
+            <phase>initialize</phase>
+            <configuration>
+              <apiHost>https://vendors.sdkman.io</apiHost>
+              <consumerKey>${env.SDKMAN_CONSUMER_KEY}</consumerKey>
+              <consumerToken>${env.SDKMAN_CONSUMER_TOKEN}</consumerToken>
+              <candidate>${project.identifier}</candidate>
+              <version>${layrry.version}</version>
+              <url>${project.url}</url>
+              <releaseNotesUrl>${project.url}/releases/tag/v${layrry.version}</releaseNotesUrl>
+            </configuration>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>

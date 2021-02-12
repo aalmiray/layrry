@@ -107,3 +107,6 @@ jobs:
           asset_path: ./layrry-launcher/target/distributions/layrry-launcher-${{ steps.get_version.outputs.VERSION }}-dist.tar.gz
           asset_name: layrry-launcher-${{ steps.get_version.outputs.VERSION }}.tar.gz
           asset_content_type: application/gzip
+
+      - name: Sdkman
+        run: ./mvnw -B -pl :layrry-aggregator initialize -Dlayrry.version=${{ steps.get_version.outputs.VERSION }} --file pom.xml
