@@ -31,7 +31,12 @@ jobs:
       - name: Setup Java
         uses: actions/setup-java@v1
         with:
-          java-version: 11
+          java-version: 15
+          server-id: central
+          server-username: MAVEN_USERNAME
+          server-password: MAVEN_CENTRAL_TOKEN
+          gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
+          gpg-passphrase: MAVEN_GPG_PASSPHRASE
 
       - name: Cache Maven
         uses: actions/cache@v1
@@ -40,23 +45,20 @@ jobs:
           key: ${{ runner.os }}-m2-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-m2
 
-      - name: Import GPG key
-        env:
-          GPG_SECRET_KEYS: ${{ secrets.MODITECT_GPG_SECRET_KEYS }}
+      - name: Build
         run: |
-          echo $GPG_SECRET_KEYS | base64 --decode | gpg --import --no-tty --batch --yes
+          chmod +x mvnw
+          ./mvnw -B install --file pom.xml
 
-      - name: Configure git
-        run: |
-          git config user.email "moditectbot@moditect.org"
-          git config user.name "moditectbot"
-
-      - name: Build Maven
+      - name: Release
         env:
-          GPG_PASSPHRASE: ${{ secrets.MODITECT_GPG_PASSPHRASE }}
-          SONATYPE_USERNAME: ${{ secrets.MODITECT_SONATYPE_USERNAME }}
-          SONATYPE_PASSWORD: ${{ secrets.MODITECT_SONATYPE_PASSWORD }}
-        run: mvn -B --file pom.xml -s .mvn/release-settings.xml release:prepare release:perform -Drelease -Dgpg.passhrase=${GPG_PASSPHRASE} -Dcentral.username=${SONATYPE_USERNAME} -Dcentral.password=${SONATYPE_PASSWORD}
+          MAVEN_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          MAVEN_CENTRAL_TOKEN: ${{ secrets.SONATYPE_PASSWORD }}
+          MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
+        run: |
+          git config user.name "${{ github.event.head_commit.committer.name }}"
+          git config user.email "${{ github.event.head_commit.committer.email }}"
+          mvn -B --file pom.xml release:prepare release:perform -Drepository.url=https://${GITHUB_ACTOR}:${{ secrets.GITHUB_TOKEN }}@github.com/${GITHUB_REPOSITORY}.git
 
       - name: Get the version
         id: get_version
