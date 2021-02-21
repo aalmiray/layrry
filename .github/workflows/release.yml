@@ -109,4 +109,4 @@ jobs:
           asset_content_type: application/gzip
 
       - name: Sdkman
-        run: ./mvnw -B -pl :layrry-aggregator initialize -Dlayrry.version=${{ steps.get_version.outputs.VERSION }} --file pom.xml
+        run: ./mvnw -B -pl :layrry-aggregator -Psdkman -Dlayrry.version=${{ steps.get_version.outputs.VERSION }} --file pom.xml
